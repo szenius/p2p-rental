@@ -295,7 +295,7 @@ border:1px solid #e7eaed;
 	text-align: center;
 }
 .focus-layout:hover {
-    background-color: #01a185;
+    background-color: #10ecc5;
     transition:0.5s all;
 	-webkit-transition:0.5s all;
 	-moz-transition:0.5s all;

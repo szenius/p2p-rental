@@ -4,6 +4,12 @@ Author URL: http://w3layouts.com
 License: Creative Commons Attribution 3.0 Unported
 License URL: http://creativecommons.org/licenses/by/3.0/
 -->
+<?php
+session_start();
+if (isset($_SESSION['username']) || !empty($_SESSION['username'])) {
+    header('Location: index.php');
+}
+?>
 <!DOCTYPE html>
 <?php
 include 'includes/dbconnect.php';
@@ -18,7 +24,7 @@ include 'includes/dbconnect.php';
     <body>
         <!--header section start-->
         <?php
-        include 'includes/header.php';
+        include 'includes/login/header.php';
         ?>
         <!--header section end-->
         <section>
@@ -35,12 +41,17 @@ include 'includes/dbconnect.php';
                                 $result = pg_query($db, "SELECT username FROM admin WHERE username = '$_POST[user]' AND password = '$_POST[password]' UNION SELECT username FROM member WHERE username = '$_POST[user]' AND password = '$_POST[password]'");
                                 $exists = pg_num_rows($result);
 
-                                if ($exists > 0) { //is_admin or is_user
+                                if ($exists == 1) { //legitimate user
                                     $row = pg_fetch_assoc($result);
-                                    session_start();
-                                    $_SESSION['username'] = $row[username];
-                                    //should redirect to index.php
-                                    echo "<span>Hi " . $_SESSION['username'] ."!</span>";
+                                    $_SESSION['username'] = $row['username'];
+                                    $result2 = pg_query($db, "SELECT * FROM admin WHERE username = '$_POST[user]' AND password = '$_POST[password]'");
+                                    if (pg_num_rows($result2) > 0) { //is admin
+                                        $_SESSION['is_admin'] = true;
+                                    } else {
+                                        $_SESSION['is_admin'] = false;
+                                    }
+                                    header('Location: index.php');
+                                    die();
                                 } else {
                                     echo "<span style='color:red;'>Opps! You have entered an invalid username/password!</span>";
                                 }
@@ -77,7 +88,7 @@ include 'includes/dbconnect.php';
             </div>
             <!--footer section start-->
             <?php
-            include 'includes/footer.php';
+            include 'includes/login/footer.php';
             ?>
             <!--footer section end-->
         </section>
