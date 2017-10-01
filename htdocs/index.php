@@ -121,12 +121,14 @@ include 'includes/dbconnect.php';
             <div class="mobile-app">
                 <div class="container">
                     <div class="col-md-5 app-left">
-                        <a href="mobileapp.html"><img src="images/app.png" alt=""></a>
+                        <img src="images/app.png" alt="">
                     </div>
                     <div class="col-md-7 app-right">
                         <h3>ShareStuff is the <span>Easiest</span> way to borrow or rent out second-hand goods</h3>
                         <p>Sharing is caring. All of us, at some point or another, will have things that we bought and used it for one time. Declutter your home by 
                             lending or renting out your stuff. Likewise, you can rent items that you will only use for a short term.</p>
+                        <a href="view_all_listings.php" style="text-decoration: none; color: #fff; font-size: 17px; background-color: #f3c500; 
+                           padding: 10px 20px;">View All Listings</a>
                         <div class="clearfix"></div>
                     </div>
                 </div>
