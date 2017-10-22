@@ -1,5 +1,5 @@
 CREATE OR REPLACE FUNCTION create_listing(
-title VARCHAR(255),
+title VARCHAR(256),
 price DECIMAL(12,2),
 description TEXT,
 pickup_location VARCHAR(128),
