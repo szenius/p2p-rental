@@ -13,9 +13,7 @@ RETURNS boolean AS
 $BODY$
 DECLARE last_inserted_id INT;
 BEGIN
-SELECT l1.id INTO last_inserted_id FROM itemlisting l1 WHERE l1.id >= ALL (SELECT l2.id FROM itemlisting l2);  
-last_inserted_id = last_inserted_id + 1;
-INSERT INTO itemlisting VALUES(last_inserted_id,
+INSERT INTO itemlisting VALUES(DEFAULT,
                                title, 
                                price, 
                                description, 
