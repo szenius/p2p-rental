@@ -39,20 +39,19 @@ include 'includes/dbconnect.php';
         <!-- Content section starts -->
         <div class="total-ads main-grid-border">
             <div class="container">
-
+                <br>
                 <ol class="breadcrumb" style="margin-bottom: 5px;">
                     <li><a href="index.html">Home</a></li>
-                    <li class="active">View All Users</li>
+                    <li class="active">All Users</li>
                 </ol>
                 <div class="ads-grid">
-
                     <div class="ads-display col-md-12">
                         <div class="wrapper">                   
                             <div class="bs-example bs-example-tabs" role="tabpanel" data-example-id="togglable-tabs">
                                 <ul id="myTab" class="nav nav-tabs nav-tabs-responsive" role="tablist">
                                     <li role="presentation" class="active">
                                         <a href="#home" id="home-tab" role="tab" data-toggle="tab" aria-controls="home" aria-expanded="true">
-                                            <span class="text">User List</span>
+                                            <span class="text">All Users</span>
                                         </a>
                                     </li>
                                 </ul>
