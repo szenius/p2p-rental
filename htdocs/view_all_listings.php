@@ -6,7 +6,9 @@ License URL: http://creativecommons.org/licenses/by/3.0/
 -->
 <!DOCTYPE html>
 <?php
+session_start();
 include 'includes/dbconnect.php';
+$category = $_GET['category'];
 ?>
 <html>
     <head>
@@ -15,27 +17,21 @@ include 'includes/dbconnect.php';
         include 'includes/plugins.php';
         ?>
         <script src="js/tabs.js"></script>
+        <script src="js/bootstrap-datetimepicker.min.js"></script>
+        <script src="js/bootstrap-datetimepicker.js"></script>
         <script type="text/javascript">
-            $(document).ready(function () {
-                var elem = $('#container ul');
-                $('#viewcontrols a').on('click', function (e) {
-                    if ($(this).hasClass('gridview')) {
-                        elem.fadeOut(1000, function () {
-                            $('#container ul').removeClass('list').addClass('grid');
-                            $('#viewcontrols').removeClass('view-controls-list').addClass('view-controls-grid');
-                            $('#viewcontrols .gridview').addClass('active');
-                            $('#viewcontrols .listview').removeClass('active');
-                            elem.fadeIn(1000);
-                        });
-                    } else if ($(this).hasClass('listview')) {
-                        elem.fadeOut(1000, function () {
-                            $('#container ul').removeClass('grid').addClass('list');
-                            $('#viewcontrols').removeClass('view-controls-grid').addClass('view-controls-list');
-                            $('#viewcontrols .gridview').removeClass('active');
-                            $('#viewcontrols .listview').addClass('active');
-                            elem.fadeIn(1000);
-                        });
-                    }
+            $(function () {
+                $('#datetimepicker1').datetimepicker({
+                    format: "yyyy-mm-dd",
+                    startView: 'month',
+                    minView: 'month',
+                    autoclose: true
+                });
+                $('#datetimepicker2').datetimepicker({
+                    format: "yyyy-mm-dd",
+                    startView: 'month',
+                    minView: 'month',
+                    autoclose: true
                 });
             });
         </script>
@@ -59,39 +55,60 @@ include 'includes/dbconnect.php';
         <!-- Products -->
         <div class="total-ads main-grid-border">
             <div class="container">
-                <div class="select-box">
-                    <div class="browse-category ads-list">
-                        <label>Browse Categories</label>
-                        <select class="selectpicker show-tick" data-live-search="true">
-                            <option data-tokens="Mobiles">All</option>
-                        </select>
-                    </div>
-                    <div class="search-product ads-list">
-                        <label>Search for a specific item</label>
-                        <div class="search">
-                            <div id="custom-search-input">
-                                <div class="input-group">
-                                    <input type="text" class="form-control input-lg" placeholder="Item Name" />
-                                    <span class="input-group-btn">
-                                        <button class="btn btn-info btn-lg" type="button">
-                                            <i class="glyphicon glyphicon-search"></i>
-                                        </button>
+                <form id="filter" action="view_all_listings.php" method="POST">
+                    <div class="select-box">
+                        <div class="browse-category ads-list" style="width: 30%;">
+                            <label>Browse categories</label>
+                            <select class="selectpicker show-tick" style="width: 80%;">
+                                <option data-tokens="All">All</option>
+                            </select>
+                        </div>
+                        <div class="search-product ads-list" style="width: 40%;">
+                            <label>Available period</label>
+                            <div>
+                                <div class='input-group date' id='datetimepicker1' style="width: 35%; float: left;">
+                                    <input type='text' class="form-control" />
+                                    <span class="input-group-addon">
+                                        <span class="glyphicon glyphicon-calendar"></span>
+                                    </span>
+                                </div>
+                                To
+                                <div class='input-group date' id='datetimepicker2' style="width: 35%; float: right; margin-right: 25%;">
+                                    <input type='text' class="form-control" />
+                                    <span class="input-group-addon">
+                                        <span class="glyphicon glyphicon-calendar"></span>
                                     </span>
                                 </div>
                             </div>
                         </div>
+                        <div class="search-product ads-list" style="width: 30%;">
+                            <label>Search for a specific item</label>
+                            <div class="search">
+                                <div id="custom-search-input">
+                                    <div class="input-group">
+                                        <input type="text" class="form-control input-lg" placeholder="Item Name" />
+                                        <span class="input-group-btn">
+                                            <button class="btn btn-info btn-lg" type="button">
+                                                <i class="glyphicon glyphicon-search"></i>
+                                            </button>
+                                        </span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="clearfix"></div>
                     </div>
-                    <div class="clearfix"></div>
-                </div>
-                <div class="all-categories">
-                    <h3> Select your category and find the perfect item</h3>
-                    <ul class="all-cat-list">
-                        <li><a href="mobiles.html">Mobile Devices <span class="num-of-ads">(5,78,076)</span></a></li>
-                    </ul>
-                </div>
+                </form>
                 <ol class="breadcrumb" style="margin-bottom: 5px;">
-                    <li><a href="index.html">Home</a></li>
-                    <li class="active">All Listings</li>
+                    <li><a href="index.php">Home</a></li>
+                    <?php
+                    if ($category != null) {
+                        echo '<li><a href="view_all_listings.php">All Listings</a></li>';
+                        echo '<li class="active">' . $category . '</li>';
+                    } else {
+                        echo '<li class="active">All Listings</li>';
+                    }
+                    ?>
                 </ol>
                 <div class="ads-grid">
                     <div class="ads-display col-md-12">
@@ -99,8 +116,14 @@ include 'includes/dbconnect.php';
                             <div class="bs-example bs-example-tabs" role="tabpanel" data-example-id="togglable-tabs">
                                 <ul id="myTab" class="nav nav-tabs nav-tabs-responsive" role="tablist">
                                     <li role="presentation" class="active">
-                                        <a href="#home" id="home-tab" role="tab" data-toggle="tab" aria-controls="home" aria-expanded="true">
-                                            <span class="text">All Listings</span>
+                                        <a href="#" id="home-tab" role="tab" data-toggle="tab" aria-controls="home" aria-expanded="true">
+                                            <?php
+                                            if ($category != null) {
+                                                echo '<span class="text">' . $category . '</span>';
+                                            } else {
+                                                echo '<span class="text">All Listings</span>';
+                                            }
+                                            ?>
                                         </a>
                                     </li>
                                 </ul>
@@ -133,19 +156,15 @@ include 'includes/dbconnect.php';
                                                             $json = json_decode($row[view_all_listing]);
 
                                                             $isAvail = $json->f10;
-                                                            if ($isAvail == "true") {
-                                                                echo "<a href='view_single_listing.php?id=$json->f1'>";
-                                                            } else {
-                                                                echo "<a href='javascript: void(0)'>";
-                                                            }
+                                                            echo "<a href='view_single_listing.php?id=$json->f1'>";
                                                             ?>
                                                             <li>
-                                                                <img src="images/item.jpg" title="" alt="" />
+                                                                <img src="<?php echo $json->f11; ?>" title="" alt="" />
                                                                 <section class="list-left">
                                                                     <h4 style="color: #f3c500">Category: <?php echo $json->f12; ?></h4>
                                                                     <h5 class="title"><?php echo $json->f2; ?></h5>
                                                                     <span class="adprice">$<?php echo $json->f3; ?></span>
-                                                                    <small>Posted on <?php echo $json->f7; ?></small>
+                                                                    <small>Posted on <?php echo $json->f7; ?> by <?php echo $json->f13; ?></small>
                                                                 </section>
                                                                 <section class="list-right">
                                                                     <h3>

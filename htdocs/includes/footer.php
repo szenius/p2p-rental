@@ -23,7 +23,7 @@
                         </ul>	
                         <ul class="location">
                             <li><span class="glyphicon glyphicon-envelope"></span></li>
-                            <li><a href="mailto:jiayee@u.nus.edu">jiayee@u.nus.edu</a></li>
+                            <li><a href="mailto:cs2102@u.nus.edu">cs2102@u.nus.edu</a></li>
                             <div class="clearfix"></div>
                         </ul>						
                     </address>

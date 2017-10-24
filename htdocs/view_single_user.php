@@ -6,12 +6,13 @@ License URL: http://creativecommons.org/licenses/by/3.0/
 -->
 <!DOCTYPE html>
 <?php
+session_start();
 include 'includes/dbconnect.php';
 $username = $_GET['username'];
 ?>
 <html>
     <head>
-        <title>ShareStuff - Single User</title>
+        <title>ShareStuff - View User</title>
         <?php
         include 'includes/plugins.php';
         ?>
@@ -41,72 +42,98 @@ $username = $_GET['username'];
                     <?php
                     $result = pg_query($db, "SELECT list_user_by_username('$username')");
                     $exists = pg_num_rows($result);
+                    $valid_user = true;
                     if ($exists == 1) {
                         $rows = pg_fetch_all($result);
                         foreach ($rows as $row) {
                             $json = json_decode($row[list_user_by_username]);
-                            echo "<li class='active'>$json->username</li>";
+                            echo "<li class='active'>$username</li>";
                             echo "</ol>";
                             ?>
                             <div class="product-desc">
-                                <div class = "col-md-6 product-view">
+                                <div class = "col-md-4 product-view">
                                     <h2><?php echo $username; ?></h2>
-                                    <div class="flexslider">
-                                        <ul class="slides">
-                                            <li data-thumb="<?php echo $json->photo; ?>">
-                                                <img src="<?php echo $json->photo; ?>" />
-                                            </li>
-                                        </ul>
-                                    </div>
-                                    <!-- FlexSlider -->
-                                    <script defer src="js/jquery.flexslider.js"></script>
-                                    <link rel="stylesheet" href="css/flexslider.css" type="text/css" media="screen" />
-
-                                    <script>
-                                        // Can also be used with $(document).ready()
-                                        $(window).load(function () {
-                                            $('.flexslider').flexslider({
-                                                animation: "slide",
-                                                controlNav: "thumbnails"
-                                            });
-                                        });
-                                    </script>
-                                    <!-- //FlexSlider -->
-                                    <p>Name: <?php echo $json->first_name . ' ' . $json->last_name; ?></p>
-                                    <p>Email: <?php echo $json->email; ?></p>
-                                </div>
-                                <div class="col-md-6 product-details-grid">
-                                    <a href="images/profile.jpg"></a>
-                                    <!--
-                                    <div class="item-price">
-                                        <div class="product-price">
-                                            <p class="p-price">Price</p>
-                                            <h3 class="rate">$ </h3>
-                                            <div class="clearfix"></div>
-                                        </div>
-                                        <div class="condition">
-                                            <p class="p-price">Owned By</p>
-                                            <h4></h4>
-                                            <div class="clearfix"></div>
-                                        </div>
-                                        <div class="itemtype">
-                                            <p class="p-price">Rental Period</p>
-                                            <h4></h4>
-                                            <div class="clearfix"></div>
-                                        </div>
-                                    </div>
-                                    <div class="interested text-center">
-                                        <h4>Interested in this Listing? </h4><p></p>
-                                        <input type='number' steps='.01' placeholder="Enter bidding price">
-                                        <p><a class='btn btn-default'><b>Bid Now!</b></a></p>
-                                    </div>
-                                    -->
                                     <?php
-                                }
+                                    if ($json->username != null) {
+                                        ?>
+                                        <div class="flexslider">
+                                            <ul class="slides">
+                                                <li data-thumb="<?php echo $json->photo; ?>">
+                                                    <img src="<?php echo $json->photo; ?>" />
+                                                </li>
+                                            </ul>
+                                        </div>
+                                        <!-- FlexSlider -->
+                                        <script defer src="js/jquery.flexslider.js"></script>
+                                        <link rel="stylesheet" href="css/flexslider.css" type="text/css" media="screen" />
+
+                                        <script>
+                                            // Can also be used with $(document).ready()
+                                            $(window).load(function () {
+                                                $('.flexslider').flexslider({
+                                                    animation: "slide",
+                                                    controlNav: "thumbnails"
+                                                });
+                                            });
+                                        </script>
+                                        <!-- //FlexSlider -->
+                                        <p>Name: <?php echo $json->first_name . ' ' . $json->last_name; ?></p>
+                                        <p>Email: <?php echo $json->email; ?></p>
+                                        <?php
+                                    } else {
+                                        $valid_user = false;
+                                        echo '<p>Error: User Not Found</p>';
+                                    }
+                                    ?>
+                                </div>
+                                <?php
                             }
-                            ?>
-                        </div>
-                        <div class="clearfix"></div>
+                        }
+
+                        if ($valid_user) {
+                            $listing_result = pg_query($db, "SELECT view_user_listing('$username')");
+                            $listing_exists = pg_num_rows($listing_result);
+                            echo '<div class="col-md-8 product-details-grid">';
+                            echo '<h3 class="rate" style="padding-left: 10%;">All Listings</h3>';
+                            echo '<div class="clearfix"></div><br>';
+                            echo '<div class="item-list" style="padding-left: 10px;">';
+                            if ($listing_exists > 0) {
+                                $listing_rows = pg_fetch_all($listing_result);
+                                foreach ($listing_rows as $row) {
+                                    $json = json_decode($row[view_user_listing]);
+                                    echo "<a href='view_single_listing.php?id=$json->f1'>";
+                                    ?>
+                                    <div class="product-price" style="border-bottom: 1px solid #eee;">
+                                        <img src="<?php echo $json->f11; ?>">
+                                        <p class="p-listing">
+                                            <span class="label label-info" style="padding: .4em .6em;"><?php echo $json->f12; ?></span><br>
+                                            <span style="margin-top: 6px; display: inline-block;"><?php echo $json->f2; ?></span>
+                                        </p>
+                                        <?php
+                                        if ($json->f10) {
+                                            echo '<span class="label label-success" style="float: right; padding: .6em;">Available</span>';
+                                        } else {
+                                            echo '<span class="label label-default" style="float: right; padding: .6em;">Not Available</span>';
+                                        }
+                                        ?>
+                                        <h4>
+                                            <small style="float: right; margin-top: 8px;">From <?php echo $json->f8; ?> To <?php echo $json->f9; ?></small>
+                                        </h4>
+                                        <div class="clearfix"></div>
+                                    </div>
+                                    <?php
+                                    echo '</a>';
+                                }
+                            } else {
+                                echo '<div class="product-price" style="border-bottom: 1px solid #eee;">';
+                                echo '<p class="p-listing">No Listing Found</p>';
+                                echo '<div class="clearfix"></div>';
+                                echo '</div>';
+                            }
+                            echo '</div></div>';
+                            echo '<div class="clearfix"></div>';
+                        }
+                        ?>
                     </div>
             </div>
         </div>
