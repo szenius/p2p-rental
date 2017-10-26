@@ -30,7 +30,7 @@ $username = $_SESSION['username'];
             <div class="container">    
                 <h1>My Account</h1>
                 <p></p>
-                <a href="post-listing.html">Post Your Listing</a>
+                <a href="post_listing.php">Post Your Listing</a>
             </div>
         </div>
         <!--single-page-->

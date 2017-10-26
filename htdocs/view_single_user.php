@@ -30,7 +30,7 @@ $username = $_GET['username'];
             <div class="container">    
                 <h1>Borrow  <span class="segment-heading">    anything online </span> at zero or low cost</h1>
                 <p>Come and browse from our vast catalogue of things!</p>
-                <a href="post-listing.html">Post Your Listing</a>
+                <a href="post_listing.php">Post Your Listing</a>
             </div>
         </div>
         <!--single-page-->
