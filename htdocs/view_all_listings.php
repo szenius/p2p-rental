@@ -10,6 +10,7 @@ session_start();
 include 'includes/dbconnect.php';
 $category = $_GET['category'];
 $sel_category = $category;
+$sortby = $_GET['sort'];
 ?>
 <html>
     <head>
@@ -34,11 +35,19 @@ $sel_category = $category;
                     minView: 'month',
                     autoclose: true
                 });
+                $('#sortlisting').on('change', function () {
+                    var attr = $(this).val(); // get selected value
+                    var cat = document.getElementById('category').value;
+                    $('#filterListing').attr("action", "view_all_listings.php?category=" + encodeURIComponent(cat) + "&sort=" + attr);
+                    $('#filter').click();
+                });
             });
 
             function submitPage() {
                 var cat = document.getElementById('category').value;
-                $('#filterListing').attr("action", "view_all_listings.php?category=" + encodeURIComponent(cat));
+                if ($('#filterListing').attr("action") == "") {
+                    $('#filterListing').attr("action", "view_all_listings.php?category=" + encodeURIComponent(cat));
+                }
                 return true;
             }
         </script>
@@ -128,7 +137,7 @@ $sel_category = $category;
                         </div>
                         <div class="clearfix"></div>
                         <div style="margin-top: 10px;">
-                            <input type="submit" value="Filter" name="filter" class="btn btn-basic" />
+                            <input type="submit" value="Filter" name="filter" id="filter" class="btn btn-basic" />
                         </div>
                         <div class="clearfix"></div>
                     </div>
@@ -172,24 +181,133 @@ $sel_category = $category;
                                                 <div class="sort">
                                                     <div class="sort-by">
                                                         <label>Sort By : </label>
-                                                        <select>
-                                                            <option value="">Most Recent</option>
-                                                            <option value="">Price: Rs Low to High</option>
-                                                            <option value="">Price: Rs High to Low</option>
+                                                        <select id="sortlisting">
+                                                            <option <?php
+                                                            if ($sortby == null) {
+                                                                echo 'selected';
+                                                            }
+                                                            ?> disabled>Choose an option</option>
+                                                            <option value="dateAsc" <?php
+                                                            if ($sortby == "dateAsc") {
+                                                                echo 'selected';
+                                                            }
+                                                            ?>>Date: Asc</option>
+                                                            <option value="dateDesc" <?php
+                                                            if ($sortby == "dateDesc") {
+                                                                echo 'selected';
+                                                            }
+                                                            ?>>Date: Desc</option>
+                                                            <option value="priceAsc" <?php
+                                                            if ($sortby == "priceAsc") {
+                                                                echo 'selected';
+                                                            }
+                                                            ?>>Price: Asc</option>
+                                                            <option value="priceDesc" <?php
+                                                            if ($sortby == "priceDesc") {
+                                                                echo 'selected';
+                                                            }
+                                                            ?>>Price: Desc</option>
                                                         </select>
                                                     </div>
                                                 </div>
                                                 <div class="clearfix"></div>
                                                 <ul class="list">
                                                     <?php
-                                                    if ($sel_from == "" && $sel_to == "") {
+                                                    if ($sortby != null) {
+                                                        if ($sortby == "dateAsc") {
+                                                            $sort = "date";
+                                                            $asc = "TRUE";
+                                                        } else if ($sortby == "dateDesc") {
+                                                            $sort = "date";
+                                                            $asc = "FALSE";
+                                                        } else if ($sortby == "priceAsc") {
+                                                            $sort = "price";
+                                                            $asc = "TRUE";
+                                                        } else if ($sortby == "priceDesc") {
+                                                            $sort = "price";
+                                                            $asc = "FALSE";
+                                                        }
+
+                                                        if ($sort == "date") {
+                                                            $result = pg_query($db, "SELECT sort_by_post_date($asc, '$sel_category', '$sel_from', '$sel_to', '$sel_itemName');");
+                                                            $exists = pg_num_rows($result);
+                                                            if ($exists > 0) {
+                                                                $rows = pg_fetch_all($result);
+                                                                foreach ($rows as $row) {
+                                                                    $json = json_decode($row[sort_by_post_date]);
+                                                                    $isAvail = $json->f10;
+                                                                    echo "<a href='view_single_listing.php?id=$json->f1'>";
+                                                                    ?>
+                                                                    <li>
+                                                                        <img src="<?php echo $json->f11; ?>" title="" alt="" />
+                                                                        <section class="list-left">
+                                                                            <h4 style="color: #f3c500">Category: <?php echo $json->f12; ?></h4>
+                                                                            <h5 class="title"><?php echo $json->f2; ?></h5>
+                                                                            <span class="adprice">$<?php echo $json->f3; ?></span>
+                                                                            <small>Posted on <?php echo $json->f7; ?> by <?php echo $json->f13; ?></small>
+                                                                        </section>
+                                                                        <section class="list-right">
+                                                                            <h3>
+                                                                                <?php
+                                                                                if ($isAvail == "true") {
+                                                                                    echo "<span class='label label-success'>Available</span>";
+                                                                                } else {
+                                                                                    echo "<span class='label label-default'>Not Available</span>";
+                                                                                }
+                                                                                ?>
+                                                                            </h3>
+                                                                            <span class="date">From <?php echo $json->f8; ?> To <?php echo $json->f9; ?></span>
+                                                                        </section>
+                                                                        <div class="clearfix"></div>
+                                                                    </li> 
+                                                                    <?php
+                                                                    echo "</a>";
+                                                                }
+                                                            }
+                                                        } else {
+                                                            $result = pg_query($db, "SELECT sort_by_price('$asc', '$sel_category', '$sel_from', '$sel_to', '$sel_itemName')");
+                                                            $exists = pg_num_rows($result);
+                                                            if ($exists > 0) {
+                                                                $rows = pg_fetch_all($result);
+                                                                foreach ($rows as $row) {
+                                                                    $json = json_decode($row[sort_by_price]);
+                                                                    $isAvail = $json->f10;
+                                                                    echo "<a href='view_single_listing.php?id=$json->f1'>";
+                                                                    ?>
+                                                                    <li>
+                                                                        <img src="<?php echo $json->f11; ?>" title="" alt="" />
+                                                                        <section class="list-left">
+                                                                            <h4 style="color: #f3c500">Category: <?php echo $json->f12; ?></h4>
+                                                                            <h5 class="title"><?php echo $json->f2; ?></h5>
+                                                                            <span class="adprice">$<?php echo $json->f3; ?></span>
+                                                                            <small>Posted on <?php echo $json->f7; ?> by <?php echo $json->f13; ?></small>
+                                                                        </section>
+                                                                        <section class="list-right">
+                                                                            <h3>
+                                                                                <?php
+                                                                                if ($isAvail == "true") {
+                                                                                    echo "<span class='label label-success'>Available</span>";
+                                                                                } else {
+                                                                                    echo "<span class='label label-default'>Not Available</span>";
+                                                                                }
+                                                                                ?>
+                                                                            </h3>
+                                                                            <span class="date">From <?php echo $json->f8; ?> To <?php echo $json->f9; ?></span>
+                                                                        </section>
+                                                                        <div class="clearfix"></div>
+                                                                    </li> 
+                                                                    <?php
+                                                                    echo "</a>";
+                                                                }
+                                                            }
+                                                        }
+                                                    } else if ($sel_from == "" && $sel_to == "") {
                                                         $result = pg_query($db, "SELECT view_all_listing('$sel_category')");
                                                         $exists = pg_num_rows($result);
                                                         if ($exists > 0) {
                                                             $rows = pg_fetch_all($result);
                                                             foreach ($rows as $row) {
                                                                 $json = json_decode($row[view_all_listing]);
-
                                                                 $isAvail = $json->f10;
                                                                 echo "<a href='view_single_listing.php?id=$json->f1'>";
                                                                 ?>
@@ -204,7 +322,6 @@ $sel_category = $category;
                                                                     <section class="list-right">
                                                                         <h3>
                                                                             <?php
-                                                                            $isAvail = $json->f10;
                                                                             if ($isAvail == "true") {
                                                                                 echo "<span class='label label-success'>Available</span>";
                                                                             } else {
@@ -227,7 +344,6 @@ $sel_category = $category;
                                                             $rows = pg_fetch_all($result);
                                                             foreach ($rows as $row) {
                                                                 $json = json_decode($row[search_listings]);
-
                                                                 $isAvail = $json->f10;
                                                                 echo "<a href='view_single_listing.php?id=$json->f1'>";
                                                                 ?>
@@ -242,7 +358,6 @@ $sel_category = $category;
                                                                     <section class="list-right">
                                                                         <h3>
                                                                             <?php
-                                                                            $isAvail = $json->f10;
                                                                             if ($isAvail == "true") {
                                                                                 echo "<span class='label label-success'>Available</span>";
                                                                             } else {

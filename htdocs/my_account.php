@@ -192,9 +192,9 @@ if (isset($_POST['delete'])) {
                                     if ($json->f4 == "success") {
                                         echo '<span class="label label-success" style="padding: .6em; display: inline-block;">$' . $json->f2 . ': Success</span>';
                                     } else if ($json->f4 == "pending") {
-                                        echo '<span class="label label-default" style="padding: .6em; display: inline-block;">$' . $json->f2 . ': Pending</span>';
+                                        echo '<span class="label label-warning" style="padding: .6em; display: inline-block;">$' . $json->f2 . ': Pending</span>';
                                     } else {
-                                        echo '<span class="label label-default" style="padding: .6em; display: inline-block;">$' . $json->f2 . ': Failed</span>';
+                                        echo '<span class="label label-danger" style="padding: .6em; display: inline-block;">$' . $json->f2 . ': Failed</span>';
                                     }
                                     ?>
                                     <h4>
