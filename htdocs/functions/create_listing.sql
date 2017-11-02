@@ -13,7 +13,8 @@ RETURNS boolean AS
 $BODY$
 DECLARE last_inserted_id INT;
 BEGIN
-INSERT INTO itemlisting VALUES(DEFAULT,
+IF upper(photo) = "DEFAULT"
+  THEN INSERT INTO itemlisting VALUES(DEFAULT,
                                title, 
                                price, 
                                description, 
@@ -26,6 +27,20 @@ INSERT INTO itemlisting VALUES(DEFAULT,
                                DEFAULT,
                                category_name,
                                owner); 
+ELSE INSERT INTO itemlisting VALUES(DEFAULT,
+                               title, 
+                               price, 
+                               description, 
+                               pickup_location, 
+                               return_location,
+                               DEFAULT,
+                               start_date,
+                               end_date,
+                               TRUE,
+                               photo,
+                               category_name,
+                               owner); 
+END IF;
 RETURN TRUE;
 END; 
 $BODY$ 
