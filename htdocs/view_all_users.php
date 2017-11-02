@@ -13,6 +13,7 @@ session_start();
 <!DOCTYPE html>
 <?php
 include 'includes/dbconnect.php';
+$sel_username = "";
 ?>
 <html>
     <head>
@@ -39,7 +40,31 @@ include 'includes/dbconnect.php';
         <!-- Content section starts -->
         <div class="total-ads main-grid-border">
             <div class="container">
-                <br>
+                <?php
+                if (isset($_POST['search'])) {
+                    $sel_username = $_POST['username'];
+                } 
+                ?>
+                <form name="searchUser" action="" method="POST">
+                    <div class="select-box">
+                        <div class="search-product ads-list">
+                            <label>Search for a specific user</label>
+                            <div class="search">
+                                <div id="custom-search-input">
+                                    <div class="input-group">
+                                        <input type="text" class="form-control input-lg" placeholder="Username" name="username" value="<?php echo $sel_username; ?>" />
+                                        <span class="input-group-btn">
+                                            <button class="btn btn-info btn-lg" type="submit" name="search">
+                                                <i class="glyphicon glyphicon-search"></i>
+                                            </button>
+                                        </span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="clearfix"></div>
+                    </div>
+                </form>
                 <ol class="breadcrumb" style="margin-bottom: 5px;">
                     <li><a href="index.html">Home</a></li>
                     <li class="active">All Users</li>
@@ -67,10 +92,10 @@ include 'includes/dbconnect.php';
 
                                                 <ul class="list">
                                                     <?php
-                                                    $results = pg_query($db, 'SELECT list_users()');
+                                                    $results = pg_query($db, "SELECT search_users('$sel_username');");
                                                     $rows = pg_fetch_all($results);
                                                     foreach ($rows as $row) {
-                                                        $json = json_decode($row['list_users']);
+                                                        $json = json_decode($row['search_users']);
                                                         $image = $json->f5;
                                                         $username = $json->f1;
                                                         $name = $json->f2 . $json->f3;

@@ -682,7 +682,7 @@ p.creating{
 }
 .sign-up1{
     float:left;
-    width:27%;
+    width:33%;
 }
 .sign-up1 h4{
     color:#3C4348;
@@ -691,7 +691,7 @@ p.creating{
 }
 .sign-up2{
     float:right;
-    width:70%;
+    width:67%;
 }
 .sign-up2 input[type="text"]{
     outline:none;
@@ -2322,7 +2322,7 @@ h3.rate {
     padding: 8px 10px;
 }
 .bootstrap-select:not([class*="col-"]):not([class*="form-control"]):not(.input-group-btn) {
-    width: 260px;
+    width: 220px;
 }
 #custom-search-input {
     padding: 3px;
