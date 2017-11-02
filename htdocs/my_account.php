@@ -9,6 +9,10 @@ License URL: http://creativecommons.org/licenses/by/3.0/
 session_start();
 include 'includes/dbconnect.php';
 $username = $_SESSION['username'];
+
+if (isset($_POST['delete'])) {
+    header("refresh:2;url=my_account.php");
+}
 ?>
 <html>
     <head>
@@ -105,24 +109,33 @@ $username = $_SESSION['username'];
                                 $json = json_decode($row[view_user_listing]);
                                 ?>
                                 <div class="product-price" style="border-bottom: 1px solid #eee;">
-                                    <img src="<?php echo $json->f11; ?>">
-                                    <p class="p-listing">
-                                        <span class="label label-info" style="padding: .4em .6em;"><?php echo $json->f12; ?></span><br>
-                                        <span style="margin-top: 6px; display: inline-block;">
-                                            <a href="edit_listing.php?id=<?php echo $json->f1; ?>"><span class="glyphicon glyphicon-pencil"></span></a>&nbsp
-                                            <a href="view_single_listing.php?id=<?php echo $json->f1; ?>"><?php echo $json->f2; ?></a>
-                                        </span>
-                                    </p>
-                                    <?php
-                                    if ($json->f10) {
-                                        echo '<span class="label label-success" style="float: right; padding: .6em;">Available</span>';
-                                    } else {
-                                        echo '<span class="label label-default" style="float: right; padding: .6em;">Not Available</span>';
-                                    }
-                                    ?>
-                                    <h4>
-                                        <small style="float: right; margin-top: 8px;">From <?php echo $json->f8; ?> To <?php echo $json->f9; ?></small>
-                                    </h4>
+                                    <div style="width: 15%; display: inline-block; text-align: center;">
+                                        <p><img src="<?php echo $json->f11; ?>" style="width: 70px;"></p>
+                                        <?php 
+                                        if (!$json->f10) {
+                                            echo "<a href='repost_listing.php?id=$json->f1' class='btn btn-default' style='margin-top: 8px;'><small>Repost</small></a>";
+                                        }
+                                        ?>
+                                    </div>
+                                    <div style="width: 85%; float: right;">
+                                        <p class="p-listing">
+                                            <span class="label label-info" style="padding: .4em .6em;"><?php echo $json->f12; ?></span><br>
+                                            <span style="margin-top: 6px; display: inline-block;">
+                                                <a href="edit_listing.php?id=<?php echo $json->f1; ?>"><span class="glyphicon glyphicon-pencil"></span></a>&nbsp
+                                                <a href="view_single_listing.php?id=<?php echo $json->f1; ?>"><?php echo $json->f2; ?></a>
+                                            </span>
+                                        </p>
+                                        <?php
+                                        if ($json->f10) {
+                                            echo '<span class="label label-success" style="float: right; padding: .6em;">Available</span>';
+                                        } else {
+                                            echo '<span class="label label-default" style="float: right; padding: .6em;">Not Available</span>';
+                                        }
+                                        ?>
+                                        <h4>
+                                            <small style="float: right; margin-top: 60px;">From <?php echo $json->f8; ?> To <?php echo $json->f9; ?></small>
+                                        </h4>
+                                    </div>
                                     <div class="clearfix"></div>
                                 </div>
                                 <?php
@@ -146,10 +159,9 @@ $username = $_SESSION['username'];
                             $bidId = $_POST['bidId'];
                             $delete_result = pg_query($db, "SELECT delete_pending_bid($bidId);");
                             $delete_rows = pg_fetch_all($delete_result);
-                            header("refresh:2;url=my_account.php");
                             foreach ($delete_rows as $row) {
                                 if ($row[delete_pending_bid] == "t") {
-                                    echo "<p style='color: red; margin-top: 8px;'>Bid Deleted Successfully!</p>";
+                                    echo "<p style='color: green; margin-top: 8px;'>Bid Deleted Successfully!</p>";
                                 } else {
                                     echo "<p style='color: red; margin-top: 8px;'>Bid Deletion Failed!</p>";
                                 }
@@ -174,7 +186,7 @@ $username = $_SESSION['username'];
                                     ?>
                                     <p class="p-bid">
                                         <span class="label label-info" style="padding: .4em .6em;"><?php echo $json->f8; ?></span><br>
-                                        <span style="margin-top: 6px; display: inline-block;"><?php echo $json->f7; ?></span>
+                                        <a href="view_single_listing.php?id=<?php echo $json->f6; ?>" style="margin-top: 6px; display: inline-block;"><?php echo $json->f7; ?></a>
                                     </p>
                                     <?php
                                     if ($json->f4 == "success") {

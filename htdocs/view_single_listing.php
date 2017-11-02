@@ -9,6 +9,10 @@ License URL: http://creativecommons.org/licenses/by/3.0/
 session_start();
 include 'includes/dbconnect.php';
 $id = $_GET['id'];
+
+if (isset($_POST['accept']) || isset($_POST['delete']) || isset($_POST['bidAmt'])) {
+    header("refresh:2;url=view_single_listing.php?id=$id");
+}
 ?>
 <html>
     <head>
@@ -38,7 +42,7 @@ $id = $_GET['id'];
             <div class="container">
                 <ol class="breadcrumb" style="margin-bottom: 5px;">
                     <li><a href="index.php">Home</a></li>
-                    <li><a href="view_all_listings.php">All Listings</a></li>
+                    <li><a href="view_all_listings.php?category=All">All Listings</a></li>
                     <?php
                     $result = pg_query($db, "SELECT view_listing($id)");
                     $exists = pg_num_rows($result);
@@ -155,100 +159,102 @@ $id = $_GET['id'];
                                                 <div role="tabpanel" class="tab-pane fade in active" id="home" aria-labelledby="home-tab">
                                                     <div>
                                                         <div class="clearfix"></div>
-                                                        <form name="deleteBid" action="" method="POST">
-                                                            <?php
-                                                            if (isset($_POST['delete'])) {
-                                                                $bidId = $_POST['bidId'];
-                                                                $delete_result = pg_query($db, "SELECT delete_bid($bidId);");
-                                                                $delete_rows = pg_fetch_all($delete_result);
-                                                                header("refresh:2;url=view_single_listing.php?id=$id");
-                                                                foreach ($delete_rows as $row) {
-                                                                    if ($row[delete_bid] == "t") {
-                                                                        echo "<p style='color: red;'>Bid Deleted Successfully!</p>";
-                                                                    } else {
-                                                                        echo "<p style='color: red;'>Bid Deletion Failed!</p>";
-                                                                    }
+                                                        <?php
+                                                        if (isset($_POST['delete'])) {
+                                                            $bidId = $_POST['bidId'];
+                                                            $delete_result = pg_query($db, "SELECT delete_bid($bidId);");
+                                                            $delete_rows = pg_fetch_all($delete_result);
+                                                            foreach ($delete_rows as $row) {
+                                                                if ($row[delete_bid] == "t") {
+                                                                    echo "<p style='color: green;'>Bid Deleted Successfully!</p>";
+                                                                } else {
+                                                                    echo "<p style='color: red;'>Bid Deletion Failed!</p>";
                                                                 }
                                                             }
+                                                        }
 
-                                                            if (isset($_POST['accept'])) {
-                                                                $bidId = $_POST['bidId'];
-                                                                $accept_result = pg_query($db, "SELECT winning_bid($bidId);");
-                                                                $accept_rows = pg_fetch_all($accept_result);
-                                                                header("refresh:2;url=view_single_listing.php?id=$id");
-                                                                foreach ($accept_rows as $row) {
-                                                                    if ($row[winning_bid] == "t") {
-                                                                        echo "<p style='color: red;'>Bid Accepted Successfully!</p>";
-                                                                    } else {
-                                                                        echo "<p style='color: red;'>Bid Acceptance Failed!</p>";
-                                                                    }
+                                                        if (isset($_POST['accept'])) {
+                                                            $bidId = $_POST['bidId'];
+                                                            $accept_result = pg_query($db, "SELECT winning_bid($bidId);");
+                                                            $accept_rows = pg_fetch_all($accept_result);
+                                                            foreach ($accept_rows as $row) {
+                                                                if ($row[winning_bid] == "t") {
+                                                                    echo "<p style='color: green;'>Bid Accepted Successfully!</p>";
+                                                                } else {
+                                                                    echo "<p style='color: red;'>Bid Acceptance Failed!</p>";
                                                                 }
                                                             }
-                                                            ?>
-                                                            <table class="table" style="width: 100%">
-                                                                <tr>
-                                                                    <th style="width: 40%; color: black"><h5>Username</h5></th>
-                                                                    <th style="width: 15%; color: black"><h5>Bid</h5></th>
-                                                                    <th style="width: 15%; color: black"><h5>Status</h5></th>
-                                                                    <th style="width: 15%; color: black"><h5>Action</h5></th>
-                                                                </tr>
-                                                                <?php
-                                                                $all_bids_result = pg_query($db, "SELECT view_all_bids($id);");
-                                                                $all_bids_exists = pg_num_rows($all_bids_result);
-                                                                if ($all_bids_exists > 0) {
-                                                                    $all_bids_rows = pg_fetch_all($all_bids_result);
-                                                                    foreach ($all_bids_rows as $row) {
-                                                                        $bjson = json_decode($row[view_all_bids]);
-                                                                        ?>
-                                                                        <tr>
-                                                                            <td><h5><?php echo $bjson->f5; ?></h5></td>
-                                                                            <td><h5>$<?php echo $bjson->f2; ?></h5></td>
-                                                                            <td><h5><?php echo $bjson->f4; ?></h5></td>
-                                                                            <?php
-                                                                            if ($_SESSION['is_admin']) {
-                                                                                ?>
-                                                                                <td>
+                                                        }
+                                                        
+                                                        if ($_SESSION['username'] == $json->owner && !$json->is_avail) {
+                                                            echo "<p style='color: red;'>You're not allow to accept any bids as the item is not available now.</p>";
+                                                        }
+                                                        ?>
+                                                        <table class="table" style="width: 100%">
+                                                            <tr>
+                                                                <th style="width: 40%; color: black"><h5>Username</h5></th>
+                                                                <th style="width: 15%; color: black"><h5>Bid</h5></th>
+                                                                <th style="width: 15%; color: black"><h5>Status</h5></th>
+                                                                <th style="width: 15%; color: black"><h5>Action</h5></th>
+                                                            </tr>
+                                                            <?php
+                                                            $all_bids_result = pg_query($db, "SELECT view_all_bids($id);");
+                                                            $all_bids_exists = pg_num_rows($all_bids_result);
+                                                            if ($all_bids_exists > 0) {
+                                                                $all_bids_rows = pg_fetch_all($all_bids_result);
+                                                                foreach ($all_bids_rows as $row) {
+                                                                    $bjson = json_decode($row[view_all_bids]);
+                                                                    ?>
+                                                                    <tr>
+                                                                        <td><h5><?php echo $bjson->f5 . ' on ' . $bjson->f3; ?></h5></td>
+                                                                        <td><h5>$<?php echo $bjson->f2; ?></h5></td>
+                                                                        <td><h5><?php echo $bjson->f4; ?></h5></td>
+                                                                        <?php
+                                                                        if ($_SESSION['is_admin']) {
+                                                                            ?>
+                                                                            <td>
+                                                                                <form name="deleteBid" action="" method="POST">
                                                                                     <input type="hidden" name="delete" value="delete">
                                                                                     <input type="hidden" name="bidId" value="<?php echo $bjson->f1; ?>">
                                                                                     <input type="submit" class="btn btn-danger" value="Delete">
-                                                                                </td>
-                                                                                <?php
-                                                                            } else if ($_SESSION['username'] == $json->owner) {
-                                                                                if ($json->is_avail) {
-                                                                                    ?>
-                                                                                    <td>
+                                                                                </form>
+                                                                            </td>
+                                                                            <?php
+                                                                        } else if ($_SESSION['username'] == $json->owner) {
+                                                                            if ($json->is_avail) {
+                                                                                ?>
+                                                                                <td>
+                                                                                    <form name="acceptBid" action="" method="POST">
                                                                                         <input type="hidden" name="accept" value="accept">
                                                                                         <input type="hidden" name="bidId" value="<?php echo $bjson->f1; ?>">
                                                                                         <input type="submit" class="btn btn-success" value="Accept">
-                                                                                    </td>
-                                                                                    <?php
-                                                                                } else {
-                                                                                    ?>
-                                                                                    <td>
-                                                                                        <input type="hidden" name="accept" value="accept">
-                                                                                        <input type="hidden" name="bidId" value="<?php echo $bjson->f1; ?>">
-                                                                                        <input type="submit" class="btn btn-success" disabled="true" value="Accept">
-                                                                                    </td>
-                                                                                    <?php
-                                                                                }
+                                                                                    </form>
+                                                                                </td>
+                                                                                <?php
+                                                                            } else {
+                                                                                ?>
+                                                                                <td>
+                                                                                    <button type="button" class="btn btn-default" disabled="true">Accept</button>
+                                                                                </td>
+                                                                                <?php
                                                                             }
-                                                                            ?>
-                                                                        </tr>
-                                                                        <?php
-                                                                    }
-                                                                } else {
-                                                                    ?>
-                                                                    <tr>
-                                                                        <td><h5>No bids found.</h5></td>
-                                                                        <td><h5></h5></td>
-                                                                        <td></td>
-                                                                        <td></td>
+                                                                        }
+                                                                        ?>
                                                                     </tr>
                                                                     <?php
                                                                 }
+                                                            } else {
                                                                 ?>
-                                                            </table>
-                                                        </form>
+                                                                <tr>
+                                                                    <td><h5>No bids found.</h5></td>
+                                                                    <td><h5></h5></td>
+                                                                    <td></td>
+                                                                    <td></td>
+                                                                </tr>
+                                                                <?php
+                                                            }
+                                                            ?>
+                                                        </table>
                                                     </div>
                                                 </div>
                                             </div>
@@ -256,7 +262,7 @@ $id = $_GET['id'];
                                     </div>
                                     <?php
                                 } else
-                                if ($json->is_avail && ($startDate <= $today) && ($endDate >= $today)) {
+                                if ($json->is_avail && $endDate >= $today) {
                                     ?>
                                     <div class="col-md-6 product-details-grid">
                                         <div class="interested text-center">
@@ -272,10 +278,9 @@ $id = $_GET['id'];
                                                 $bidder = $_SESSION['username'];
                                                 $create_result = pg_query($db, "SELECT create_bid($bidAmt,'$bidder',$id);");
                                                 $create_rows = pg_fetch_all($create_result);
-                                                header("refresh:2;url=view_single_listing.php?id=$id");
                                                 foreach ($create_rows as $row) {
                                                     if ($row[create_bid] == "t") {
-                                                        echo "<p style='color: red;'>Bid Submitted Successfully!</p>";
+                                                        echo "<p style='color: green;'>Bid Submitted Successfully!</p>";
                                                     } else {
                                                         echo "<p style='color: red;'>Bid Submission Failed!</p>";
                                                     }
@@ -289,7 +294,7 @@ $id = $_GET['id'];
                                     ?>
                                     <div class="col-md-6 product-details-grid">
                                         <div class="interested text-center" style="background:gray">
-                                            <h4>Item is not available now</h4>
+                                            <h4>Item is not available for bidding now</h4>
                                         </div>
                                     </div>
                                     <?php
