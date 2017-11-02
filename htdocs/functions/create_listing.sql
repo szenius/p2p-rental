@@ -13,7 +13,7 @@ RETURNS boolean AS
 $BODY$
 DECLARE last_inserted_id INT;
 BEGIN
-IF upper(photo) = "DEFAULT"
+IF upper(photo) = 'DEFAULT'
   THEN INSERT INTO itemlisting VALUES(DEFAULT,
                                title, 
                                price, 
