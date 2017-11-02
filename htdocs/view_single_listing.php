@@ -232,11 +232,7 @@ if (isset($_POST['accept']) || isset($_POST['delete']) || isset($_POST['bidAmt']
                                                                                 </td>
                                                                                 <?php
                                                                             } else {
-                                                                                ?>
-                                                                                <td>
-                                                                                    <button type="button" class="btn btn-default" disabled="true">Accept</button>
-                                                                                </td>
-                                                                                <?php
+                                                                                echo '<td></td>';
                                                                             }
                                                                         }
                                                                         ?>
