@@ -45,7 +45,7 @@ $sortby = $_GET['sort'];
 
             function submitPage() {
                 var cat = document.getElementById('category').value;
-                if ($('#filterListing').attr("action") == "") {
+                if ($('#filterListing').attr("action") == null) {
                     $('#filterListing').attr("action", "view_all_listings.php?category=" + encodeURIComponent(cat));
                 }
                 return true;

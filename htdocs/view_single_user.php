@@ -52,7 +52,16 @@ $username = $_GET['username'];
                             ?>
                             <div class="product-desc">
                                 <div class = "col-md-4 product-view">
-                                    <h2><?php echo $username; ?></h2>
+                                    <h2>
+                                        <?php
+                                        if ($_SESSION['is_admin']) {
+                                            ?>
+                                            <a href="edit_profile.php?username=<?php echo $username; ?>"><span class="glyphicon glyphicon-pencil"></span></a> &nbsp
+                                            <?php
+                                        }
+                                        echo $username;
+                                        ?>
+                                    </h2>
                                     <?php
                                     if ($json->username != null) {
                                         ?>
