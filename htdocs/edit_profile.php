@@ -12,7 +12,7 @@ session_start();
 include 'includes/dbconnect.php';
 $curr_user = $_SESSION['username'];
 //echo "my current username ".$_SESSION['username'];
-$curr_user = $_GET['username'];
+//$curr_user = $_GET['username'];
 ?>
 <html>
     <head>
@@ -37,12 +37,12 @@ $curr_user = $_GET['username'];
                                 echo "<span style='color:red;'>Sorry! Password and confirm password fields don't match!</span>";
                             } else {
                                 //echo "username ".$_POST['username']."password "."last name + first name ".$_POST['l_name'].$_POST['f_name']." email ".$_POST['username'];
-                                $username = $_POST['username'];
+                                //$username = $_POST['username'];
                                 $l_name = $_POST['l_name'];
                                 $f_name = $_POST['f_name'];
                                 $email = $_POST['email'];
                                 $password = $_POST['password'];
-                                $result = pg_query($db, "SELECT update_user('$username', '$password', '$f_name', '$l_name', '$email', 'DEFAULT')");
+                                $result = pg_query($db, "SELECT update_user('$curr_user', '$password', '$f_name', '$l_name', '$email', 'DEFAULT')");
                                 if ($result == true) {
                                     echo "<span style='color:green;'><b>Success in updating profile!</b></span><br><br>";
                                     header("refresh:1; url=my_account.php");
@@ -86,7 +86,7 @@ $curr_user = $_GET['username'];
                                         </div>
                                         <div class="clearfix"> </div>
                                     </div>
-                                    <div class="sign-u">
+<!--                                     <div class="sign-u">
                                         <div class="sign-up1">
                                             <h4>Username :</h4>
                                         </div>
@@ -94,7 +94,7 @@ $curr_user = $_GET['username'];
                                             <input type="text" name="username" value="<?php echo $json->username; ?>" required=" " readonly="true"/>
                                         </div>
                                         <div class="clearfix"> </div>
-                                    </div>
+                                    </div> -->
 
                                     <div class="sign-u">
                                         <div class="sign-up1">
