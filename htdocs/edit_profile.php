@@ -34,8 +34,6 @@ $curr_user = $_GET['username'];
                             if ($_POST['password'] != $_POST['password_confirm']) {
                                 echo "<span style='color:red;'>Sorry! Password and confirm password fields don't match!</span>";
                             } else {
-                                //echo "username ".$_POST['username']."password "."last name + first name ".$_POST['l_name'].$_POST['f_name']." email ".$_POST['username'];
-                                //$username = $_POST['username'];
                                 $l_name = $_POST['l_name'];
                                 $f_name = $_POST['f_name'];
                                 $email = $_POST['email'];
@@ -43,7 +41,11 @@ $curr_user = $_GET['username'];
                                 $result = pg_query($db, "SELECT update_user('$curr_user', '$password', '$f_name', '$l_name', '$email', 'DEFAULT')");
                                 if ($result == true) {
                                     echo "<span style='color:green;'><b>Success in updating profile!</b></span><br><br>";
-                                    header("refresh:1; url=my_account.php");
+                                    if ($_SESSION['is_admin']) {
+                                        header("refresh:1; url=view_single_user.php?username=" . $curr_user);
+                                    } else {
+                                        header("refresh:1; url=my_account.php");
+                                    }
                                 } else {
                                     echo "<span style='color:red;'><b>Sorry! Edit profile failed!</b></span><br><br>";
                                 }
@@ -56,8 +58,10 @@ $curr_user = $_GET['username'];
                                 echo "<span style='color:green;'>Success in deleting user!</span><br><br>";
                                 if ($_SESSION['is_admin'] = false) {
                                     $_SESSION['username'] = NULL;
+                                    header("refresh:1; url=view_all_users.php");
+                                } else {
+                                    header("refresh:1; url=index.php");
                                 }
-                                header("refresh:1; url=index.php");
                             } else {
                                 echo "<span style='color:red;'>Error in deleting user!</span><br><br>";
                             }
@@ -129,22 +133,22 @@ $curr_user = $_GET['username'];
                                         </span>
                                     </div>
                                 </form>
-        <?php
-    }
-}
-?>
+                                <?php
+                            }
+                        }
+                        ?>
                         <div class="clearfix"> </div>
                     </div>
                 </div>
             </div>
             <!--footer section start-->
-<?php
-include 'includes/login/footer.php';
-?>
+            <?php
+            include 'includes/login/footer.php';
+            ?>
             <!--footer section end-->
         </section>
     </body>
 </html>
-            <?php
-            include 'includes/dbclose.php';
-            ?>
+<?php
+include 'includes/dbclose.php';
+?>
