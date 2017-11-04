@@ -1,4 +1,4 @@
-﻿CREATE OR REPLACE FUNCTION public.view_all_bids()
+﻿CREATE OR REPLACE FUNCTION public.view_all_bids(_itemlisting integer)
   RETURNS SETOF json AS
 $BODY$
 BEGIN
@@ -8,9 +8,10 @@ b.date,
 b.bidding_status,
 b.bidder,
 b.itemlisting_id
-)) FROM bid b;
+)) FROM bid b WHERE b.itemlisting_id = _itemlisting;
 END;$BODY$
   LANGUAGE plpgsql VOLATILE
-  COST 100;
-ALTER FUNCTION public.query_highest_bid(integer)
+  COST 100
+  ROWS 1000;
+ALTER FUNCTION public.view_all_bids(integer)
   OWNER TO postgres;
