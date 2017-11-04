@@ -56,30 +56,34 @@ include 'includes/dbconnect.php';
                 <?php
                 if (isset($_POST['post_listing'])) {
                         //echo "category ".$_POST['category']." \ndescription ".$_POST['description']."\n".$_POST['price']."\n".$_POST['pickup']."\n".$_POST['return']."\n".$_POST['start_date']."\n".$_POST['end_date'];
-                    $category = $_POST['category'];
-                    $description = $_POST['description'];
-                    $price = $_POST['price'];
-                    $pickup = $_POST['pickup'];
-                    $return = $_POST['return'];
                     $start_date = $_POST['start_date'];
                     $end_date = $_POST['end_date'];
-                    $title = $_POST['title'];
-                    $curr_user = $_SESSION['username'];
+                    if($end_date < $start_date){
+                        echo "<span style='color:red;'><b>Error, end date must be after start date!</b></span><br><br>";
+                    }
+                    else{
+                        $category = $_POST['category'];
+                        $description = $_POST['description'];
+                        $price = $_POST['price'];
+                        $pickup = $_POST['pickup'];
+                        $return = $_POST['return'];
+                        $title = $_POST['title'];
+                        $curr_user = $_SESSION['username'];
                     //echo $curr_user;
-                    if (!isset($_FILES['fileselect']) || $_FILES['fileselect']['error'] == UPLOAD_ERR_NO_FILE) {
-                        $result = pg_query($db, "SELECT create_listing('$title', $price, '$description', '$pickup', '$return', '$start_date', '$end_date', 'DEFAULT','$category', '$curr_user')");
-                    } else {
-                        $filename = 'images/' . $_FILES['fileselect']['name'];
+                        if (!isset($_FILES['fileselect']) || $_FILES['fileselect']['error'] == UPLOAD_ERR_NO_FILE) {
+                            $result = pg_query($db, "SELECT create_listing('$title', $price, '$description', '$pickup', '$return', '$start_date', '$end_date', 'DEFAULT','$category', '$curr_user')");
+                        } else {
+                            $filename = 'images/' . $_FILES['fileselect']['name'];
                             //echo $filename;
-                        $result = pg_query($db, "SELECT create_listing('$title', $price, '$description', '$pickup', '$return', '$start_date', '$end_date', '$filename','$category', '$curr_user')");
+                            $result = pg_query($db, "SELECT create_listing('$title', $price, '$description', '$pickup', '$return', '$start_date', '$end_date', '$filename','$category', '$curr_user')");
+                        }
+                        if ($result == true) {
+                            header("refresh:1; url=my_account.php");
+                            echo "<span style='color:green;'><b>Success in creating new listing!</b></span><br><br>";
+                        } else {
+                            echo "<span style='color:red;'><b>Error in creating new listing!</b></span><br><br>";
+                        }
                     }
-                    if ($result == true) {
-                        //header("refresh:1; url=my_account.php");
-                        echo "<span style='color:green;'><b>Success in creating new listing!</b></span><br><br>";
-                    } else {
-                        echo "<span style='color:red;'><b>Error in creating new listing!</b></span><br><br>";
-                    }
-                    //header("refresh:1; url=my_account.php");
                 }
                 ?>
                 <form name="post_listing" action="post_listing.php" method="POST" enctype="multipart/form-data">
@@ -126,7 +130,7 @@ include 'includes/dbconnect.php';
 
                             <div>
                                 <input type="file" id="fileselect" name="fileselect" />
-                                <div id="filedrag">or drop files here</div>
+                                <div id="filedrag"></div>
                             </div>
 
                             <div id="submitbutton">

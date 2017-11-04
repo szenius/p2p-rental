@@ -10,9 +10,7 @@ session_start();
 <!DOCTYPE html>
 <?php
 include 'includes/dbconnect.php';
-$curr_user = $_SESSION['username'];
-//echo "my current username ".$_SESSION['username'];
-//$curr_user = $_GET['username'];
+$curr_user = $_GET['username'];
 ?>
 <html>
     <head>
@@ -86,15 +84,6 @@ $curr_user = $_SESSION['username'];
                                         </div>
                                         <div class="clearfix"> </div>
                                     </div>
-<!--                                     <div class="sign-u">
-                                        <div class="sign-up1">
-                                            <h4>Username :</h4>
-                                        </div>
-                                        <div class="sign-up2">
-                                            <input type="text" name="username" value="<?php echo $json->username; ?>" required=" " readonly="true"/>
-                                        </div>
-                                        <div class="clearfix"> </div>
-                                    </div> -->
 
                                     <div class="sign-u">
                                         <div class="sign-up1">

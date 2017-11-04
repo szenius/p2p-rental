@@ -33,13 +33,13 @@ $id = $_GET['id'];
             <div class="post-ad-form">
                 <?php
                 if (isset($_POST['edit_listing'])) {
+                    $start_date = $_POST['start_date'];
+                    $end_date = $_POST['end_date'];
                     $category = $_POST['category'];
                     $description = $_POST['description'];
                     $price = $_POST['price'];
                     $pickup = $_POST['pickup'];
                     $return = $_POST['return'];
-                    $start_date = $_POST['start_date'];
-                    $end_date = $_POST['end_date'];
                     $title = $_POST['title'];
                     $input_status = $_POST['status'];
                     $status = "";
@@ -66,6 +66,7 @@ $id = $_GET['id'];
                     } else {
                         echo "<span style='color:red;'><b>Error in updating listing!</b></span><br><br>";
                     }
+                    
                 }
                 if (isset($_POST['delete_listing'])) {
                     $result = pg_query($db, "SELECT delete_listing($id)");
@@ -142,13 +143,17 @@ $id = $_GET['id'];
                             </select>
                             <div class="clearfix"></div>	
                             <div class="upload-ad-photos">
+                                <label>Current Photo <span>*</span></label>
+                                <img src="<?php echo $json->photo; ?>" />
+                                <div class="clearfix"></div>    
+                                <span style='color:red; position:relative;'>If no photo is chosen, default photo will be listed.</span>
                                 <label>Photo of your listing :</label> 
                                 <div class="photos-upload-view">
                                     <input type="hidden" id="MAX_FILE_SIZE" name="MAX_FILE_SIZE" value="300000" />
 
                                     <div>
                                         <input type="file" id="fileselect" name="fileselect2" />
-                                        <div id="filedrag">or drop files here</div>
+                                        <div id="filedrag"></div>
                                     </div>
 
                                     <div id="submitbutton">
