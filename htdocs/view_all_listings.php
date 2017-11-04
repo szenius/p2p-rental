@@ -191,12 +191,12 @@ $sortby = $_GET['sort'];
                                                             if ($sortby == "dateAsc") {
                                                                 echo 'selected';
                                                             }
-                                                            ?>>Date: Asc</option>
+                                                            ?>>Posted Date: Asc</option>
                                                             <option value="dateDesc" <?php
                                                             if ($sortby == "dateDesc") {
                                                                 echo 'selected';
                                                             }
-                                                            ?>>Date: Desc</option>
+                                                            ?>>Posted Date: Desc</option>
                                                             <option value="priceAsc" <?php
                                                             if ($sortby == "priceAsc") {
                                                                 echo 'selected';
@@ -229,7 +229,16 @@ $sortby = $_GET['sort'];
                                                         }
 
                                                         if ($sort == "date") {
-                                                            $result = pg_query($db, "SELECT sort_by_post_date($asc, '$sel_category', '$sel_from', '$sel_to', '$sel_itemName');");
+                                                            if ($sel_from == "" && $sel_to == "") {
+                                                                $result = pg_query($db, "SELECT sort_by_post_date($asc, '$sel_category', null, null, '$sel_itemName');");
+                                                            } else if ($sel_from == "") {
+                                                                $result = pg_query($db, "SELECT sort_by_post_date($asc, '$sel_category', null, '$sel_to', '$sel_itemName');");
+                                                            } else if ($sel_to == "") {
+                                                                $result = pg_query($db, "SELECT sort_by_post_date($asc, '$sel_category', '$sel_from', null, '$sel_itemName');");
+                                                            } else {
+                                                                $result = pg_query($db, "SELECT sort_by_post_date($asc, '$sel_category', '$sel_from', '$sel_to', '$sel_itemName');");
+                                                            }
+                                                            
                                                             $exists = pg_num_rows($result);
                                                             if ($exists > 0) {
                                                                 $rows = pg_fetch_all($result);
@@ -265,7 +274,16 @@ $sortby = $_GET['sort'];
                                                                 }
                                                             }
                                                         } else {
-                                                            $result = pg_query($db, "SELECT sort_by_price('$asc', '$sel_category', '$sel_from', '$sel_to', '$sel_itemName')");
+                                                            if ($sel_from == "" && $sel_to == "") {
+                                                                $result = pg_query($db, "SELECT sort_by_price($asc, '$sel_category', null, null, '$sel_itemName');");
+                                                            } else if ($sel_from == "") {
+                                                                $result = pg_query($db, "SELECT sort_by_price($asc, '$sel_category', null, '$sel_to', '$sel_itemName');");
+                                                            } else if ($sel_to == "") {
+                                                                $result = pg_query($db, "SELECT sort_by_price($asc, '$sel_category', '$sel_from', null, '$sel_itemName');");
+                                                            } else {
+                                                                $result = pg_query($db, "SELECT sort_by_price($asc, '$sel_category', '$sel_from', '$sel_to', '$sel_itemName');");
+                                                            }
+                                                            
                                                             $exists = pg_num_rows($result);
                                                             if ($exists > 0) {
                                                                 $rows = pg_fetch_all($result);
@@ -301,7 +319,7 @@ $sortby = $_GET['sort'];
                                                                 }
                                                             }
                                                         }
-                                                    } else if ($sel_from == "" && $sel_to == "") {
+                                                    } else if ($sel_from == "" && $sel_to == "" && $sel_itemName == "") {
                                                         $result = pg_query($db, "SELECT view_all_listing('$sel_category')");
                                                         $exists = pg_num_rows($result);
                                                         if ($exists > 0) {
@@ -338,7 +356,16 @@ $sortby = $_GET['sort'];
                                                             }
                                                         }
                                                     } else {
-                                                        $result = pg_query($db, "SELECT search_listings('$sel_category', '$sel_from', '$sel_to', '$sel_itemName')");
+                                                        if ($sel_from == "" && $sel_to == "") {
+                                                            $result = pg_query($db, "SELECT search_listings('$sel_category', null, null, '$sel_itemName')");
+                                                        } else if ($sel_from == "") {
+                                                            $result = pg_query($db, "SELECT search_listings('$sel_category', null, '$sel_to', '$sel_itemName')");
+                                                        } else if ($sel_to == "") {
+                                                            $result = pg_query($db, "SELECT search_listings('$sel_category', '$sel_from', null, '$sel_itemName')");
+                                                        } else {
+                                                            $result = pg_query($db, "SELECT search_listings('$sel_category', '$sel_from', '$sel_to', '$sel_itemName')");
+                                                        }
+
                                                         $exists = pg_num_rows($result);
                                                         if ($exists > 0) {
                                                             $rows = pg_fetch_all($result);

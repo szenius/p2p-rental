@@ -145,6 +145,35 @@ if (isset($_POST['accept']) || isset($_POST['delete']) || isset($_POST['bidAmt']
                                 date_default_timezone_set('Asia/Singapore');
                                 $today = date('Y-m-d');
                                 if ($_SESSION['is_admin'] || $_SESSION['username'] == $json->owner) {
+                                    if ($_SESSION['is_admin']) {
+                                        ?>
+                                        <div class="col-md-6 product-details-grid">
+                                            <div class="interested text-center">
+                                                <h4>Interested in this Listing? </h4><p></p>
+                                                <form name="submitBid" action="" method="POST">
+                                                    <input name="bidAmt" type="number" step="0.01" min="0" placeholder="Enter bidding price">
+                                                    <br>Bid as: <?php echo $_SESSION['username']; ?>
+                                                    <p><input type="submit" class='btn btn-default' value="Bid Now!"></p>
+                                                </form>
+                                                <?php
+                                                if (isset($_POST['bidAmt'])) {
+                                                    $bidAmt = $_POST['bidAmt'];
+                                                    $bidder = $_SESSION['username'];
+                                                    $create_result = pg_query($db, "SELECT create_bid($bidAmt,'$bidder',$id);");
+                                                    $create_rows = pg_fetch_all($create_result);
+                                                    foreach ($create_rows as $row) {
+                                                        if ($row[create_bid] == "t") {
+                                                            echo "<p style='color: green;'>Bid Submitted Successfully!</p>";
+                                                        } else {
+                                                            echo "<p style='color: red;'>Bid Submission Failed!</p>";
+                                                        }
+                                                    }
+                                                }
+                                                ?>
+                                            </div>
+                                        </div>
+                                        <?php
+                                    }
                                     ?>
                                     <div class="col-md-5" style="margin: 20px 0px 0px 50px; float: right; width: 43%;">
                                         <div class="bs-example bs-example-tabs" role="tabpanel" data-example-id="togglable-tabs">
@@ -185,7 +214,7 @@ if (isset($_POST['accept']) || isset($_POST['delete']) || isset($_POST['bidAmt']
                                                                 }
                                                             }
                                                         }
-                                                        
+
                                                         if ($_SESSION['username'] == $json->owner && !$json->is_avail) {
                                                             echo "<p style='color: red;'>You're not allow to accept any bids as the item is not available now.</p>";
                                                         }
@@ -257,8 +286,7 @@ if (isset($_POST['accept']) || isset($_POST['delete']) || isset($_POST['bidAmt']
                                         </div>
                                     </div>
                                     <?php
-                                } else
-                                if ($json->is_avail && $endDate >= $today) {
+                                } else if ($json->is_avail && $endDate >= $today) {
                                     ?>
                                     <div class="col-md-6 product-details-grid">
                                         <div class="interested text-center">

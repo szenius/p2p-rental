@@ -60,7 +60,7 @@ $id = $_GET['id'];
                         $title = $_POST['title'];
                         $curr_user = $_SESSION['username'];
                         if (!isset($_FILES['fileselect']) || $_FILES['fileselect']['error'] == UPLOAD_ERR_NO_FILE) {
-                            $result = pg_query($db, "SELECT create_listing('$title', $price, '$description', '$pickup', '$return', '$start_date', '$end_date', '','$category', '$curr_user')");
+                            $result = pg_query($db, "SELECT create_listing('$title', $price, '$description', '$pickup', '$return', '$start_date', '$end_date', 'DEFAULT','$category', '$curr_user')");
                         } else {
                             $filename = 'images/' . $_FILES['fileselect']['name'];
                             $result = pg_query($db, "SELECT create_listing('$title', $price, '$description', '$pickup', '$return', '$start_date', '$end_date', '$filename','$category', '$curr_user')");
@@ -82,7 +82,7 @@ $id = $_GET['id'];
                             $json = json_decode($row[view_listing]);
                             ?>
 
-                            <form name="edit_listing" action="" method="POST">
+                            <form name="edit_listing" action="" method="POST"  enctype="multipart/form-data">
                                 <label>Select Category <span>*</span></label>
                                 <select required="" name="category">
                                     <?php
@@ -130,8 +130,8 @@ $id = $_GET['id'];
                                         <input type="hidden" id="MAX_FILE_SIZE" name="MAX_FILE_SIZE" value="300000" />
 
                                         <div>
-                                            <input type="file" id="fileselect" name="fileselect" />
-                                            <div id="filedrag">or drop files here</div>
+                                            <input type="file" id="fileselect" name="fileselect" value="<?php echo $json->photo; ?>" />
+                                            <div id="filedrag"></div>
                                         </div>
 
                                         <div id="submitbutton">
