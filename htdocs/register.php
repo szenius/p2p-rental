@@ -34,7 +34,7 @@ include 'includes/dbconnect.php';
                     <?php
                     if (isset($_POST['register'])) {
                         if($_POST['password'] != $_POST['password_confirm']){
-                            echo "<span style='color:red;'>Sorry! Password and confirm password fields don't match!</span>";
+                            echo "<span style='color:red;'><b>Sorry! Password and confirm password fields don't match!</b></span><br><br>";
                         }
                         else{
                             //echo "username ".$_POST['username']."password "."last name + first name ".$_POST['l_name'].$_POST['f_name']." email ".$_POST['username'];
@@ -44,15 +44,18 @@ include 'includes/dbconnect.php';
                             $email = $_POST['email'];
                             $password = $_POST['password'];
                             $result = pg_query($db, "SELECT create_user('$username', '$password', '$f_name', '$l_name', '$email', 'DEFAULT', FALSE)");
-                            //pg_query($db, "INSERT into 'user' values($username, $password, $f_name,$l_name,$email,DEFAULT,'FALSE')");
-                            if($result == true){
-                                $_SESSION['username'] = $username;
-                                echo "<span style='color:green;'>Success! User account created!</span>";
-                                // header('Location: view_all_listings.php');
-                                header( "refresh:1; url=view_all_listings.php" ); 
+                            $result_row = pg_fetch_result($result, 0, "create_user");
+                            if($result_row == "t"){
+                                echo "<span style='color:green;'><b>Success! User account created!</b></span><br><br>";
+                                if ($_SESSION['is_admin']) {
+                                    header( "refresh:1; url=view_all_users.php" ); 
+                                } else {
+                                    $_SESSION['username'] = $username;
+                                    header( "refresh:1; url=index.php" ); 
+                                }
                             }
                             else{
-                                echo "<span style='color:red;'>Sorry! Registration failed!</span>";
+                                echo "<span style='color:red;'><b>Sorry! Registration failed!</b></span><br><br>";
 
                             }
 

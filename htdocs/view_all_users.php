@@ -62,6 +62,7 @@ $sel_username = "";
                                 </div>
                             </div>
                         </div>
+                        <a href="register.php" class="btn btn-warning" style="float: right; background-color: #f3c500;">Create New User</a>
                         <div class="clearfix"></div>
                     </div>
                 </form>
@@ -98,7 +99,7 @@ $sel_username = "";
                                                         $json = json_decode($row['search_users']);
                                                         $image = $json->f5;
                                                         $username = $json->f1;
-                                                        $name = $json->f2 . $json->f3;
+                                                        $name = $json->f2 . " " . $json->f3;
                                                         $email = $json->f4;
                                                         echo "<a href='view_single_user.php?username=$username'>";
                                                         echo '<li><img src="' . $image . '" title="" alt="" /><section class="list-left"><h5 class="title">' . $username . '</h5><br>

@@ -39,7 +39,8 @@ $curr_user = $_GET['username'];
                                 $email = $_POST['email'];
                                 $password = $_POST['password'];
                                 $result = pg_query($db, "SELECT update_user('$curr_user', '$password', '$f_name', '$l_name', '$email', 'DEFAULT')");
-                                if ($result == true) {
+                                $result_row = pg_fetch_result($result, 0, "update_user");
+                                if ($result_row == "t") {
                                     echo "<span style='color:green;'><b>Success in updating profile!</b></span><br><br>";
                                     if ($_SESSION['is_admin']) {
                                         header("refresh:1; url=view_single_user.php?username=" . $curr_user);
@@ -54,16 +55,17 @@ $curr_user = $_GET['username'];
                         if (isset($_POST['delete_profile'])) {
                             //delete stored proc here
                             $result = pg_query($db, "SELECT delete_user('$curr_user')");
-                            if ($result == true) {
-                                echo "<span style='color:green;'>Success in deleting user!</span><br><br>";
-                                if ($_SESSION['is_admin'] = false) {
+                            $result_row = pg_fetch_result($result, 0, "delete_user");
+                            if ($result_row == "t") {
+                                echo "<span style='color:green;'><b>Success in deleting user!</b></span><br><br>";
+                                if (!$_SESSION['is_admin']) {
                                     $_SESSION['username'] = NULL;
                                     header("refresh:1; url=view_all_users.php");
                                 } else {
                                     header("refresh:1; url=index.php");
                                 }
                             } else {
-                                echo "<span style='color:red;'>Error in deleting user!</span><br><br>";
+                                echo "<span style='color:red;'><b>Error in deleting user!</b></span><br><br>";
                             }
                         }
                         ?>
