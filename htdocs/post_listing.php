@@ -40,6 +40,12 @@ include 'includes/dbconnect.php';
             autoclose: true
         });
     });
+    function delayRefreshPage(mileSeconds) {
+        window.setTimeout(refreshPage, mileSeconds);
+    }
+    function refreshPage() {
+     window.location.href= 'my_account.php';
+    }
     </script>
 </head>
 <!-- Content starts here -->
@@ -78,8 +84,9 @@ include 'includes/dbconnect.php';
                             $result = pg_query($db, "SELECT create_listing('$title', $price, '$description', '$pickup', '$return', '$start_date', '$end_date', '$filename','$category', '$curr_user')");
                         }
                         if ($result == true) {
-                            header("refresh:1; url=my_account.php");
                             echo "<span style='color:green;'><b>Success in creating new listing!</b></span><br><br>";
+                            //header("refresh:1; url=my_account.php");
+                            echo "<script> delayRefreshPage(1000); </script>";
                         } else {
                             echo "<span style='color:red;'><b>Error in creating new listing!</b></span><br><br>";
                         }
