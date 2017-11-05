@@ -145,7 +145,7 @@ if (isset($_POST['accept']) || isset($_POST['delete']) || isset($_POST['bidAmt']
                                 date_default_timezone_set('Asia/Singapore');
                                 $today = date('Y-m-d');
                                 if ($_SESSION['is_admin'] || $_SESSION['username'] == $json->owner) {
-                                    if ($_SESSION['is_admin']) {
+                                    if ($_SESSION['is_admin'] && !$_SESSION['username'] == $json->owner) {
                                         ?>
                                         <div class="col-md-6 product-details-grid">
                                             <div class="interested text-center">
@@ -221,10 +221,10 @@ if (isset($_POST['accept']) || isset($_POST['delete']) || isset($_POST['bidAmt']
                                                         ?>
                                                         <table class="table" style="width: 100%">
                                                             <tr>
-                                                                <th style="width: 40%; color: black"><h5>Username</h5></th>
+                                                                <th style="width: 30%; color: black"><h5>Username</h5></th>
                                                                 <th style="width: 15%; color: black"><h5>Bid</h5></th>
                                                                 <th style="width: 15%; color: black"><h5>Status</h5></th>
-                                                                <th style="width: 15%; color: black"><h5>Action</h5></th>
+                                                                <th style="width: 25%; color: black"><h5>Action</h5></th>
                                                             </tr>
                                                             <?php
                                                             $all_bids_result = pg_query($db, "SELECT view_all_bids($id);");
@@ -238,33 +238,34 @@ if (isset($_POST['accept']) || isset($_POST['delete']) || isset($_POST['bidAmt']
                                                                         <td><h5><?php echo $bjson->f5 . ' on ' . $bjson->f3; ?></h5></td>
                                                                         <td><h5>$<?php echo $bjson->f2; ?></h5></td>
                                                                         <td><h5><?php echo $bjson->f4; ?></h5></td>
-                                                                        <?php
-                                                                        if ($_SESSION['is_admin']) {
-                                                                            ?>
-                                                                            <td>
-                                                                                <form name="deleteBid" action="" method="POST">
-                                                                                    <input type="hidden" name="delete" value="delete">
-                                                                                    <input type="hidden" name="bidId" value="<?php echo $bjson->f1; ?>">
-                                                                                    <input type="submit" class="btn btn-danger" value="Delete">
-                                                                                </form>
-                                                                            </td>
-                                                                            <?php
-                                                                        } else if ($_SESSION['username'] == $json->owner) {
-                                                                            if ($json->is_avail) {
-                                                                                ?>
-                                                                                <td>
-                                                                                    <form name="acceptBid" action="" method="POST">
-                                                                                        <input type="hidden" name="accept" value="accept">
-                                                                                        <input type="hidden" name="bidId" value="<?php echo $bjson->f1; ?>">
-                                                                                        <input type="submit" class="btn btn-success" value="Accept">
-                                                                                    </form>
-                                                                                </td>
-                                                                                <?php
-                                                                            } else {
-                                                                                echo '<td></td>';
-                                                                            }
-                                                                        }
-                                                                        ?>
+                                                                        <td>
+                                                                            <h5>
+                                                                                <div style="width: 100%">
+                                                                                    <?php
+                                                                                    if ($_SESSION['username'] == $json->owner) {
+                                                                                        if ($json->is_avail) {
+                                                                                            ?>
+                                                                                            <form name="acceptBid" action="" method="POST" style="display: inline-block;">
+                                                                                                <input type="hidden" name="accept" value="accept">
+                                                                                                <input type="hidden" name="bidId" value="<?php echo $bjson->f1; ?>">
+                                                                                                <input type="submit" class="btn btn-success" value="&#10003;" style="padding: .2em .6em;">
+                                                                                            </form>
+                                                                                            <?php
+                                                                                        }
+                                                                                    }
+                                                                                    if ($_SESSION['is_admin']) {
+                                                                                        ?>
+                                                                                        <form name="deleteBid" action="" method="POST" style="display: inline-block;">
+                                                                                            <input type="hidden" name="delete" value="delete">
+                                                                                            <input type="hidden" name="bidId" value="<?php echo $bjson->f1; ?>">
+                                                                                            <input type="submit" class="btn btn-danger" value="X" style="padding: .2em .6em;">
+                                                                                        </form>
+                                                                                        <?php
+                                                                                    }
+                                                                                    ?>
+                                                                                </div>
+                                                                            </h5>
+                                                                        </td>
                                                                     </tr>
                                                                     <?php
                                                                 }
